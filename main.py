@@ -25,6 +25,7 @@ from livekit.plugins import (
     deepgram,
     silero
 )
+from livekit.plugins.turn_detector.multilingual import MultilingualModel
 
 # Setup logging
 logger = logging.getLogger("dual-agent")
@@ -248,7 +249,7 @@ async def generate_conversation_summary(history_dict: Dict) -> str:
                         {"role": "user", "content": prompt}
                     ],
                     temperature=0.3,  # Match existing agent temperature
-                    max_tokens=1000
+                    max_tokens=2000
                 )
             )
             
@@ -466,6 +467,15 @@ class GeneralAna(Agent):
     """First Ana assistant for general device upgrade conversations."""
     
     def __init__(self) -> None:
+        # Configure optimized VAD parameters for better interruption handling
+        vad_config = silero.VAD.load(
+            min_speech_duration=0.05,      # Default: 0.05 - Minimum duration to detect speech
+            min_silence_duration=0.45,     # Default: 0.55 - Reduced for faster response
+            prefix_padding_duration=0.3,   # Default: 0.5 - Reduced padding for tighter turns
+            activation_threshold=0.42,     # Default: 0.5 - More sensitive to detect speech
+            max_buffered_speech=30.0       # Default: 60.0 - Reduced buffer size
+        )
+        
         super().__init__(
             instructions=GENERAL_ANA_PROMPT,
             stt=deepgram.STT(model="nova-3", language="multi"),
@@ -474,7 +484,7 @@ class GeneralAna(Agent):
                 temperature=0.5
             ),
             tts=openai.TTS(model="gpt-4o-mini-tts", voice="alloy"),
-            vad=silero.VAD.load()
+            vad=vad_config
         )
     
     async def on_enter(self):
@@ -599,6 +609,15 @@ class ProductAna(Agent):
         instructions = PRODUCT_ANA_PROMPT.format(productinfo=product_info)
         
         # Initialize the agent with the enhanced prompt and extended timeout
+        # Configure optimized VAD parameters - slightly different from General Ana for better product specificity
+        vad_config = silero.VAD.load(
+            min_speech_duration=0.05,      # Default: 0.05 - Minimum duration to detect speech
+            min_silence_duration=0.40,     # Default: 0.55 - Even faster response for product needs
+            prefix_padding_duration=0.25,  # Default: 0.5 - Less padding for quick interruptions
+            activation_threshold=0.40,     # Default: 0.5 - More sensitive to detect soft speech
+            max_buffered_speech=20.0       # Default: 60.0 - Smaller buffer for faster processing
+        )
+        
         super().__init__(
             instructions=instructions,
             stt=deepgram.STT(model="nova-3", language="multi"),
@@ -608,7 +627,7 @@ class ProductAna(Agent):
                  
             ),
             tts=openai.TTS(model="gpt-4o-mini-tts", voice="alloy"),
-            vad=silero.VAD.load()
+            vad=vad_config
         )
         
     # Function to simulate product research without sound
@@ -778,8 +797,15 @@ async def entrypoint(ctx: JobContext):
         product_agent=product_agent
     )
     
-    # Create session with userdata
-    session = AgentSession[UserData](userdata=userdata)
+    # Create session with userdata and turn detection configuration
+    session = AgentSession[UserData](
+        userdata=userdata,
+        turn_detection=MultilingualModel(),  # Use the multilingual turn detector model
+        allow_interruptions=True,            # Allow user to interrupt agent (default: True)
+        min_interruption_duration=0.3,       # Lower threshold for interruption (default: 0.5)
+        min_endpointing_delay=0.4,           # Shorter delay before ending turn (default: 0.5)
+        max_endpointing_delay=3.0            # Reduced wait time for better responsiveness (default: 6.0)
+    )
     
     # Function to check if a query is product related - improved to catch more cases
     def is_product_query(query: str) -> bool:
@@ -820,6 +846,7 @@ async def entrypoint(ctx: JobContext):
     
     # We'll handle sound directly in the play_transition_sound methods
     
+    # Start with the general assistant
     # Start with the general assistant
     await session.start(
         agent=general_agent,
