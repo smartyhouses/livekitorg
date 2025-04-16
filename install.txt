@@ -1,0 +1,9 @@
+livekit
+livekit-agents
+livekit-api
+livekit-plugins-cartesia
+livekit-plugins-deepgram
+livekit-plugins-openai
+livekit-plugins-silero
+livekit-plugins-turn-detector
+livekit-protocol
