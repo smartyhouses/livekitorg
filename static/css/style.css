@@ -1,0 +1,94 @@
+/* Main styles for LiveKit Voice Agent application */
+
+/* General styling */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f8fa;
+}
+
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    font-weight: 500;
+}
+
+/* Form styling */
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Chat interface styling */
+#chat-container {
+    transition: all 0.3s ease;
+}
+
+.message {
+    position: relative;
+    max-width: 80%;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.user-message {
+    background-color: #dcf8c6;
+    border-radius: 1rem 0 1rem 1rem;
+    float: right;
+    clear: both;
+}
+
+.agent-message {
+    background-color: #f1f0f0;
+    border-radius: 0 1rem 1rem 1rem;
+    float: left;
+    clear: both;
+}
+
+/* Button styling */
+#mic-button {
+    transition: all 0.2s ease;
+}
+
+#mic-button:hover {
+    transform: scale(1.05);
+}
+
+#mic-button.active {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+    }
+}
+
+/* Status indicator */
+#status-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 5px;
+    transition: background-color 0.3s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .message {
+        max-width: 90%;
+    }
+}
