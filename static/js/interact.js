@@ -5,13 +5,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // DOM Elements
     const connectButton = document.getElementById('connect-button');
-    const disconnectButton = document.getElementById('disconnect-button');
+    // Disconnect button is commented out in HTML, but we'll keep a reference for future use
+    // const disconnectButton = document.getElementById('disconnect-button');
     const micButton = document.getElementById('mic-button');
     const sendButton = document.getElementById('send-button');
     const textInput = document.getElementById('text-input');
     const chatContainer = document.getElementById('chat-container');
     const statusIndicator = document.getElementById('status-indicator');
     const connectionStatus = document.getElementById('connection-status');
+    const micStatus = document.getElementById('mic-status');
 
     // State variables
     let room = null;
@@ -42,15 +44,36 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Disconnect from LiveKit
+    // Disconnect functionality is still available through code, but button is hidden
+    // We'll keep this code for future reference
+    /*
     disconnectButton.addEventListener('click', () => {
         disconnectFromRoom();
+    });
+    */
+    
+    // Auto-connect when the page loads
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Wait a moment before connecting to ensure everything is loaded
+        setTimeout(() => {
+            if (!isConnected) {
+                connectButton.click();
+            }
+        }, 1000);
     });
 
     // Toggle microphone
     micButton.addEventListener('click', async () => {
         if (!isConnected) {
-            addMessage('System', 'Please connect first before using the microphone.', 'agent');
+            // If not connected, try to connect first
+            connectButton.click();
+            // Wait for connection before activating microphone
+            const checkConnection = setInterval(() => {
+                if (isConnected) {
+                    clearInterval(checkConnection);
+                    startRecording();
+                }
+            }, 500);
             return;
         }
         
@@ -252,6 +275,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update UI
             micButton.classList.add('active');
             micButton.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+            micStatus.textContent = 'Listening...';
             isRecording = true;
             
             addMessage('System', 'Microphone activated. Speak now...', 'agent');
@@ -271,6 +295,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update UI
             micButton.classList.remove('active');
             micButton.innerHTML = '<i class="fas fa-microphone"></i>';
+            micStatus.textContent = 'Click to speak';
             isRecording = false;
             
             addMessage('System', 'Microphone deactivated.', 'agent');
@@ -343,26 +368,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update the connection status indicator
     function updateStatus(status) {
-        statusIndicator.className = '';
+        statusIndicator.className = 'status-indicator';
         statusIndicator.classList.add('status-' + status);
         
         switch (status) {
             case 'disconnected':
                 connectionStatus.textContent = 'Disconnected';
+                micButton.classList.remove('connected');
+                micStatus.textContent = 'Connect to start';
                 break;
             case 'connecting':
                 connectionStatus.textContent = 'Connecting...';
+                micStatus.textContent = 'Connecting...';
                 break;
             case 'connected':
                 connectionStatus.textContent = 'Connected';
+                micButton.classList.add('connected');
+                micStatus.textContent = 'Click to speak';
                 break;
         }
     }
 
-    // Enable/disable the disconnect button
+    // Enable/disable the connect button (disconnect button is hidden)
     function enableDisconnect(enable) {
         connectButton.disabled = enable;
-        disconnectButton.disabled = !enable;
+        // disconnectButton.disabled = !enable;
     }
 
     // Send a heartbeat every minute to keep the session alive
