@@ -1,107 +1,146 @@
-{% extends "base.html" %}
-
-{% block title %}
-  {% if is_activation %}
-  Activate Account - LiveKit Voice Agent
-  {% else %}
-  Sign In - LiveKit Voice Agent
-  {% endif %}
-{% endblock %}
-
-{% block extra_head %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-{% endblock %}
-
-{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% if is_activation %}
+        Activate Account - LiveKit Voice Agent
+        {% else %}
+        Sign In - LiveKit Voice Agent
+        {% endif %}
+    </title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+    <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.3.0/dist/dotlottie-wc.js" type="module"></script>
+</head>
+<body>
 <div class="auth-page">
-    <!-- AI-themed decorative elements -->
-    <div class="ai-decoration ai-decoration-1"></div>
-    <div class="ai-decoration ai-decoration-2"></div>
+    <!-- Clean background with subtle gradient -->
     
-    <div class="row justify-content-center auth-container">
-        <div class="col-md-5">
-            <div class="card auth-card">
-                <div class="auth-header {% if is_activation %}activation{% else %}signin{% endif %}">
-                    <h4>
-                        {% if is_activation %}
-                        <i class="fas fa-user-check me-2"></i>Activate Your Account
-                        {% else %}
-                        <i class="fas fa-robot me-2"></i>Voice Agent Sign In
-                        {% endif %}
-                    </h4>
-                </div>
-                <div class="card-body auth-body">
-                    {% if is_activation %}
-                    <div class="alert auth-alert alert-info mb-4">
-                        <p class="mb-1"><strong>Welcome!</strong> Your account has been created by an administrator.</p>
-                        <p class="mb-0">Please set your password to activate your account.</p>
-                    </div>
-                    {% endif %}
-                    
-                    <form method="POST" action="{{ url_for('auth.authenticate') }}" class="auth-form">
-                        {{ form.csrf_token }}
-                        
-                        <div class="mb-4">
-                            {{ form.username.label(class="form-label") }}
-                            <div class="input-group">
-                                <span class="input-group-text bg-transparent border-end-0">
-                                    <i class="fas fa-user text-muted"></i>
-                                </span>
-                                {{ form.username(class="form-control border-start-0",
-                                               placeholder="Enter your username",
-                                               readonly=is_activation) }}
-                            </div>
-                            {% if form.username.errors %}
-                                <div class="text-danger mt-1">
-                                    {% for error in form.username.errors %}
-                                        <small>{{ error }}</small>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
+    <div class="container">
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category if category != 'message' else 'info' }}">
+                            {{ message }}
+                            <button type="button" class="flash-close" onclick="this.parentElement.style.display='none';">&times;</button>
                         </div>
-                        
-                        <div class="mb-4">
-                            {{ form.password.label(class="form-label") }}
-                            <div class="input-group">
-                                <span class="input-group-text bg-transparent border-end-0">
-                                    <i class="fas fa-lock text-muted"></i>
-                                </span>
-                                {{ form.password(class="form-control border-start-0",
-                                               placeholder="Enter your password") }}
-                            </div>
-                            {% if form.password.errors %}
-                                <div class="text-danger mt-1">
-                                    {% for error in form.password.errors %}
-                                        <small>{{ error }}</small>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        <div class="row justify-content-center auth-container">
+            <div class="col-md-5">
+                <div class="glass-card">
+                    <div class="glass-card-content">
+                        <h3 class="page-title">
                             {% if is_activation %}
-                            <small class="form-text text-muted mt-1">
-                                Choose a secure password with at least 6 characters.
-                            </small>
+                            <span style="background: linear-gradient(90deg, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Activate your account to access Voice AI</span>
+                            {% else %}
+                            <span style="background: linear-gradient(90deg, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Enter your credentials to access Voice AI</span>
+                            {% endif %}
+                        </h3>
+                        
+                        {% if not is_activation %}
+                        <div style="display: flex; justify-content: center; margin: 0; padding: 0 0 15px 0;">
+                            <dotlottie-wc src="https://lottie.host/8450da08-8f50-4a90-9ad0-3c43ddec3952/mpRmE8ETk0.lottie" speed="1" style="width: 250px; height: 60px; margin: 0; padding: 0;" mode="forward" loop autoplay></dotlottie-wc>
+                        </div>
+                        {% endif %}
+                        
+                        {% if is_activation %}
+                        <div class="welcome-message">
+                            <p><strong>Welcome!</strong> Your account has been created by an administrator.</p>
+                            <p>Please set your password to activate your account.</p>
+                        </div>
+                        {% endif %}
+                        
+                        <form method="POST" action="{{ url_for('auth.authenticate') }}" class="auth-form">
+                            {{ form.csrf_token }}
+                            
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <span class="input-icon">
+                                        <i class="fas fa-user"></i>
+                                    </span>
+                                    {{ form.username(class="form-input",
+                                                   placeholder="Username",
+                                                   readonly=is_activation) }}
+                                </div>
+                                {% if form.username.errors %}
+                                    <div class="error-message">
+                                        {% for error in form.username.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <span class="input-icon">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                    {{ form.password(class="form-input",
+                                                   placeholder="Password") }}
+                                </div>
+                                {% if form.password.errors %}
+                                    <div class="error-message">
+                                        {% for error in form.password.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                {% if is_activation %}
+                                <small class="password-hint">
+                                    Choose a secure password with at least 6 characters.
+                                </small>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-action">
+                                {{ form.submit(class="submit-btn " ~
+                                              ("activation" if is_activation else "signin"),
+                                              value=("Activate Account" if is_activation else "Sign In")) }}
+                            </div>
+                        </form>
+                        
+                        <div class="auth-footer">
+                            {% if is_activation %}
+                            <p>
+                                Already activated your account? <a href="{{ url_for('auth.authenticate') }}">Sign in here</a>
+                            </p>
                             {% endif %}
                         </div>
-                        
-                        <div class="d-grid mt-4">
-                            {{ form.submit(class="btn auth-btn " ~
-                                          ("activation" if is_activation else "signin"),
-                                          value=("Activate Account" if is_activation else "Sign In")) }}
-                        </div>
-                    </form>
-                </div>
-                <div class="card-footer auth-footer text-center">
-                    <p class="mb-0">
-                        {% if is_activation %}
-                        Already activated your account? <a href="{{ url_for('auth.authenticate') }}">Sign in here</a>
-                        {% else %}
-                        Don't have an account? Please contact an administrator.
-                        {% endif %}
-                    </p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    
+    <div class="copyright">
+        © {{ now.year if now else 2025 }} LiveKit Voice Agent. All rights reserved.
+    </div>
 </div>
-{% endblock %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Auto-hide flash messages after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(function(message) {
+                message.style.opacity = '0';
+                setTimeout(function() {
+                    message.style.display = 'none';
+                }, 500);
+            });
+        }, 5000);
+    });
+</script>
+</body>
+</html>
