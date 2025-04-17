@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if is_activation %}
+  Activate Account - LiveKit Voice Agent
+  {% else %}
+  Sign In - LiveKit Voice Agent
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header {% if is_activation %}bg-success{% else %}bg-primary{% endif %} text-white">
+                <h4 class="mb-0">
+                    {% if is_activation %}
+                    Activate Your Account
+                    {% else %}
+                    Sign In
+                    {% endif %}
+                </h4>
+            </div>
+            <div class="card-body">
+                {% if is_activation %}
+                <div class="alert alert-info mb-3">
+                    <p><strong>Welcome!</strong> Your account has been created by an administrator.</p>
+                    <p>Please set your password to activate your account.</p>
+                </div>
+                {% endif %}
+                
+                <form method="POST" action="{{ url_for('auth.authenticate') }}">
+                    {{ form.csrf_token }}
+                    
+                    <div class="mb-3">
+                        {{ form.username.label(class="form-label") }}
+                        {{ form.username(class="form-control", 
+                                         placeholder="Enter your username", 
+                                         readonly=is_activation) }}
+                        {% if form.username.errors %}
+                            <div class="text-danger">
+                                {% for error in form.username.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.password.label(class="form-label") }}
+                        {{ form.password(class="form-control", 
+                                        placeholder="Enter your password") }}
+                        {% if form.password.errors %}
+                            <div class="text-danger">
+                                {% for error in form.password.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if is_activation %}
+                        <small class="form-text text-muted">
+                            Choose a secure password with at least 6 characters.
+                        </small>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-grid">
+                        {{ form.submit(class="btn " ~ 
+                                      ("btn-success" if is_activation else "btn-primary"),
+                                      value=("Activate Account" if is_activation else "Sign In")) }}
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                <p class="mb-0">
+                    {% if is_activation %}
+                    Already activated your account? <a href="{{ url_for('auth.authenticate') }}">Sign in here</a>
+                    {% else %}
+                    Don't have an account? Please contact an administrator.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

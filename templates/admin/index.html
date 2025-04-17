@@ -11,21 +11,22 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-6 mx-auto">
                         <div class="card mb-3">
-                            <div class="card-header">Referral Code Management</div>
+                            <div class="card-header bg-primary text-white">User Management</div>
                             <div class="card-body">
-                                <p>Create and manage referral codes for new users to register.</p>
-                                <a href="{{ url_for('admin.referrals') }}" class="btn btn-primary">Manage Referral Codes</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card mb-3">
-                            <div class="card-header">User Management</div>
-                            <div class="card-body">
-                                <p>View registered users and their assigned rooms.</p>
-                                <a href="{{ url_for('admin.users') }}" class="btn btn-primary">View Users</a>
+                                <p>Create and manage user accounts for the voice agent system.</p>
+                                <ul class="mb-3">
+                                    <li>Create new user accounts</li>
+                                    <li>Generate account activation links</li>
+                                    <li>Reset passwords for existing users</li>
+                                    <li>Delete inactive accounts</li>
+                                </ul>
+                                <div class="d-grid">
+                                    <a href="{{ url_for('admin.users') }}" class="btn btn-primary">
+                                        <i class="fas fa-users"></i> Manage Users
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -34,4 +35,8 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 {% endblock %}

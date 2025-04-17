@@ -4,85 +4,78 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length, ValidationError
-from database import db, User, ReferralCode
-import uuid
+from database import db, User
+from datetime import datetime
 
 auth_bp = Blueprint('auth', __name__)
 
-# Forms
-class LoginForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired(), Length(min=3, max=80)])
-    password = PasswordField('Password', validators=[DataRequired()])
-    submit = SubmitField('Log In')
-
-class RegisterForm(FlaskForm):
+# Unified authentication form
+class AuthForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=3, max=80)])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
-    referral_code = StringField('Referral Code', validators=[DataRequired()])
-    submit = SubmitField('Register')
-    
-    def validate_username(self, username):
-        user = User.query.filter_by(username=username.data).first()
-        if user:
-            raise ValidationError('Username already taken. Please choose a different one.')
-    
-    def validate_referral_code(self, referral_code):
-        code = ReferralCode.query.filter_by(code=referral_code.data).first()
-        if not code:
-            raise ValidationError('Invalid referral code.')
-        if code.is_used:
-            raise ValidationError('This referral code has already been used.')
+    submit = SubmitField('Sign In')
 
-@auth_bp.route('/login', methods=['GET', 'POST'])
-def login():
+@auth_bp.route('/auth', methods=['GET', 'POST'])
+def authenticate():
+    """
+    Combined authentication route that handles both first-time login (registration)
+    and regular login
+    """
     if current_user.is_authenticated:
         return redirect(url_for('interact'))
     
-    form = LoginForm()
+    form = AuthForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         
-        if user and check_password_hash(user.password_hash, form.password.data):
-            login_user(user)
-            next_page = request.args.get('next')
-            return redirect(next_page or url_for('interact'))
+        if user:
+            # User exists - determine if this is first login or returning user
+            if user.password_hash and user.is_activated:
+                # Existing user - verify password
+                if check_password_hash(user.password_hash, form.password.data):
+                    # Set last login timestamp
+                    user.last_login = datetime.utcnow()
+                    db.session.commit()
+                    
+                    login_user(user)
+                    next_page = request.args.get('next')
+                    return redirect(next_page or url_for('interact'))
+                else:
+                    flash('Login failed. Please check your password.', 'danger')
+            else:
+                # First-time login - set password and activate account
+                user.password_hash = generate_password_hash(form.password.data)
+                user.is_activated = True
+                user.last_login = datetime.utcnow()
+                db.session.commit()
+                
+                login_user(user)
+                flash('Your account has been activated! Welcome!', 'success')
+                return redirect(url_for('interact'))
         else:
-            flash('Login failed. Please check your username and password.')
+            # User doesn't exist
+            flash('Username not found. Please contact an administrator to create an account.', 'danger')
     
-    return render_template('login.html', form=form)
+    # Determine if this is a pre-created account that needs activation
+    is_activation = False
+    username = request.args.get('username', '')
+    if username:
+        user = User.query.filter_by(username=username).first()
+        if user and not user.is_activated:
+            is_activation = True
+            form.username.data = username
+    
+    return render_template('auth.html', form=form, is_activation=is_activation)
 
-@auth_bp.route('/register', methods=['GET', 'POST'])
+# Redirect old login URL to new auth URL
+@auth_bp.route('/login')
+def login():
+    return redirect(url_for('auth.authenticate'))
+
+# Redirect old register URL to new auth URL
+@auth_bp.route('/register')
 def register():
-    if current_user.is_authenticated:
-        return redirect(url_for('interact'))
-    
-    form = RegisterForm()
-    if form.validate_on_submit():
-        referral_code = ReferralCode.query.filter_by(code=form.referral_code.data).first()
-        
-        # Generate a unique room ID for the user
-        room_id = f"room-{uuid.uuid4()}"
-        
-        # Create new user
-        user = User(
-            username=form.username.data,
-            password_hash=generate_password_hash(form.password.data),
-            room_id=room_id,
-            referral_code_id=referral_code.id
-        )
-        
-        # Mark referral code as used
-        referral_code.is_used = True
-        from datetime import datetime
-        referral_code.used_at = datetime.utcnow()
-        
-        db.session.add(user)
-        db.session.commit()
-        
-        flash('Account created successfully! You can now log in.')
-        return redirect(url_for('auth.login'))
-    
-    return render_template('register.html', form=form)
+    return redirect(url_for('auth.authenticate'))
 
 @auth_bp.route('/logout')
 @login_required
