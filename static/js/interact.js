@@ -53,14 +53,12 @@ document.addEventListener('DOMContentLoaded', function() {
     */
     
     // Auto-connect when the page loads
-    document.addEventListener('DOMContentLoaded', async () => {
-        // Wait a moment before connecting to ensure everything is loaded
-        setTimeout(() => {
-            if (!isConnected) {
-                connectButton.click();
-            }
-        }, 1000);
-    });
+    // Wait a moment before connecting to ensure everything is loaded
+    setTimeout(() => {
+        if (!isConnected) {
+            connectButton.click();
+        }
+    }, 1000);
 
     // Toggle microphone
     micButton.addEventListener('click', async () => {
@@ -352,6 +350,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add a message to the chat container
     function addMessage(sender, text, type) {
+        // Create the original message div for compatibility
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${type}-message`;
         messageDiv.innerHTML = `
@@ -362,8 +361,47 @@ document.addEventListener('DOMContentLoaded', function() {
         
         chatContainer.appendChild(messageDiv);
         
-        // Scroll to the bottom
-        chatContainer.scrollTop = chatContainer.scrollHeight;
+        // Handle the enhanced UI elements
+        if (type === 'user') {
+            // Update the latest user input display
+            const latestUserInput = document.getElementById('latest-user-input');
+            if (latestUserInput) {
+                latestUserInput.innerHTML = `<p>${text}</p>`;
+                latestUserInput.classList.add('has-content');
+            }
+        } else if (type === 'agent') {
+            // Show AI response with typing animation
+            const aiResponseText = document.getElementById('ai-response-text');
+            if (aiResponseText) {
+                // Clear previous text
+                aiResponseText.innerHTML = '';
+                
+                // Show the AI is speaking
+                const speakingIndicator = document.querySelector('.ai-speaking-indicator');
+                if (speakingIndicator) {
+                    speakingIndicator.classList.add('active');
+                }
+                
+                // Simulate typing effect
+                let i = 0;
+                const speed = 30; // typing speed
+                
+                function typeWriter() {
+                    if (i < text.length) {
+                        aiResponseText.innerHTML += text.charAt(i);
+                        i++;
+                        setTimeout(typeWriter, speed);
+                    } else {
+                        // Typing finished
+                        if (speakingIndicator) {
+                            speakingIndicator.classList.remove('active');
+                        }
+                    }
+                }
+                
+                typeWriter();
+            }
+        }
     }
 
     // Update the connection status indicator

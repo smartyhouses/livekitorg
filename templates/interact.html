@@ -38,13 +38,40 @@
                 </div>
                 
                 <div class="glass-card-content">
-                    <div id="chat-container" class="chat-container">
-                        <!-- Messages will be displayed here -->
+                    <!-- AI Response in the middle of the page -->
+                    <div class="ai-response-wrapper">
+                        <div class="ai-speaking-indicator">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                        <div id="ai-response-text" class="ai-response-text">
+                            <!-- AI responses will be inserted here with typing animation -->
+                        </div>
+                    </div>
+                    
+                    <!-- Hidden chat container for original functionality -->
+                    <div id="chat-container" class="chat-container" style="display: none;">
+                        <!-- Original messages will be stored here but not displayed -->
+                    </div>
+                    
+                    <!-- User's latest input display -->
+                    <div class="user-input-display">
+                        <div id="latest-user-input" class="latest-user-input">
+                            <!-- Latest user input will be displayed here -->
+                            <span class="placeholder">Your message will appear here...</span>
+                        </div>
                     </div>
                     
                     <div class="voice-button-container">
                         <button id="mic-button" class="voice-button">
                             <i class="fas fa-microphone"></i>
+                            <div class="voice-waves">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
                         </button>
                         <div class="voice-status">
                             <span id="mic-status">Click to speak</span>
@@ -64,6 +91,11 @@
                 © {{ now.year if now else 2025 }} LiveKit Voice Agent. All rights reserved.
             </div>
         </div>
+    </div>
+
+    <!-- Hidden elements for functionality -->
+    <div style="display: none;">
+        <button id="connect-button">Connect</button>
     </div>
 
     <!-- Scripts -->
