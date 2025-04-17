@@ -142,22 +142,24 @@ body, html {
 }
 
 .logout-btn {
-  color: var(--text-muted);
+  color: var(--text-light);
   font-size: 1.2rem;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.7), rgba(185, 28, 28, 0.7));
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
 }
 
 .logout-btn:hover {
   color: var(--text-light);
-  background: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.9), rgba(185, 28, 28, 0.9));
   transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(239, 68, 68, 0.3);
 }
 
 .glass-card-content {
@@ -262,20 +264,17 @@ body, html {
   50% { opacity: 1; }
 }
 
-/* User Input Display */
+/* User Input Display - Simplified */
 .user-input-display {
   margin-bottom: 1rem;
-  padding: 0.75rem 1rem;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--glass-border);
-  min-height: 50px;
+  min-height: 40px;
   text-align: center;
 }
 
 .latest-user-input {
   color: var(--text-light);
-  font-size: 0.95rem;
+  font-size: 1rem;
+  opacity: 0.8;
 }
 
 .latest-user-input .placeholder {
@@ -289,6 +288,7 @@ body, html {
 
 .latest-user-input p {
   margin: 0;
+  font-weight: 300;
 }
 
 /* Voice Button */
@@ -304,14 +304,14 @@ body, html {
   width: var(--voice-btn-size);
   height: var(--voice-btn-size);
   border-radius: 50%;
-  background: linear-gradient(135deg, #f59e0b, #d97706);
+  background: linear-gradient(135deg, #ef4444, #b91c1c); /* Red for connecting */
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   position: relative;
   border: none;
-  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
   transition: all 0.3s ease;
   color: var(--text-light);
   font-size: 24px;
@@ -320,7 +320,7 @@ body, html {
 
 .voice-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 25px rgba(245, 158, 11, 0.4);
+  box-shadow: 0 6px 25px rgba(239, 68, 68, 0.4);
 }
 
 .voice-button:active {
@@ -328,13 +328,13 @@ body, html {
 }
 
 .voice-button.connected {
-  background: linear-gradient(135deg, #10b981, #059669);
-  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+  background: linear-gradient(135deg, #a855f7, #7e22ce); /* Purple for connected */
+  box-shadow: 0 4px 20px rgba(168, 85, 247, 0.3);
 }
 
 .voice-button.active {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
+  background: linear-gradient(135deg, #10b981, #059669); /* Green for listening */
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
 }
 
 .voice-waves {
@@ -527,16 +527,6 @@ body, html {
   color: var(--text-light);
 }
 
-/* Copyright */
-.copyright {
-  position: absolute;
-  bottom: 20px;
-  width: 100%;
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 0.8rem;
-  z-index: 10;
-}
 
 /* Responsive Adjustments */
 @media (max-width: 500px) {
