@@ -8,77 +8,98 @@
   {% endif %}
 {% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header {% if is_activation %}bg-success{% else %}bg-primary{% endif %} text-white">
-                <h4 class="mb-0">
-                    {% if is_activation %}
-                    Activate Your Account
-                    {% else %}
-                    Sign In
-                    {% endif %}
-                </h4>
-            </div>
-            <div class="card-body">
-                {% if is_activation %}
-                <div class="alert alert-info mb-3">
-                    <p><strong>Welcome!</strong> Your account has been created by an administrator.</p>
-                    <p>Please set your password to activate your account.</p>
-                </div>
-                {% endif %}
-                
-                <form method="POST" action="{{ url_for('auth.authenticate') }}">
-                    {{ form.csrf_token }}
-                    
-                    <div class="mb-3">
-                        {{ form.username.label(class="form-label") }}
-                        {{ form.username(class="form-control", 
-                                         placeholder="Enter your username", 
-                                         readonly=is_activation) }}
-                        {% if form.username.errors %}
-                            <div class="text-danger">
-                                {% for error in form.username.errors %}
-                                    <small>{{ error }}</small>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="mb-3">
-                        {{ form.password.label(class="form-label") }}
-                        {{ form.password(class="form-control", 
-                                        placeholder="Enter your password") }}
-                        {% if form.password.errors %}
-                            <div class="text-danger">
-                                {% for error in form.password.errors %}
-                                    <small>{{ error }}</small>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
+<div class="auth-page">
+    <!-- AI-themed decorative elements -->
+    <div class="ai-decoration ai-decoration-1"></div>
+    <div class="ai-decoration ai-decoration-2"></div>
+    
+    <div class="row justify-content-center auth-container">
+        <div class="col-md-5">
+            <div class="card auth-card">
+                <div class="auth-header {% if is_activation %}activation{% else %}signin{% endif %}">
+                    <h4>
                         {% if is_activation %}
-                        <small class="form-text text-muted">
-                            Choose a secure password with at least 6 characters.
-                        </small>
+                        <i class="fas fa-user-check me-2"></i>Activate Your Account
+                        {% else %}
+                        <i class="fas fa-robot me-2"></i>Voice Agent Sign In
                         {% endif %}
-                    </div>
-                    
-                    <div class="d-grid">
-                        {{ form.submit(class="btn " ~ 
-                                      ("btn-success" if is_activation else "btn-primary"),
-                                      value=("Activate Account" if is_activation else "Sign In")) }}
-                    </div>
-                </form>
-            </div>
-            <div class="card-footer text-center">
-                <p class="mb-0">
+                    </h4>
+                </div>
+                <div class="card-body auth-body">
                     {% if is_activation %}
-                    Already activated your account? <a href="{{ url_for('auth.authenticate') }}">Sign in here</a>
-                    {% else %}
-                    Don't have an account? Please contact an administrator.
+                    <div class="alert auth-alert alert-info mb-4">
+                        <p class="mb-1"><strong>Welcome!</strong> Your account has been created by an administrator.</p>
+                        <p class="mb-0">Please set your password to activate your account.</p>
+                    </div>
                     {% endif %}
-                </p>
+                    
+                    <form method="POST" action="{{ url_for('auth.authenticate') }}" class="auth-form">
+                        {{ form.csrf_token }}
+                        
+                        <div class="mb-4">
+                            {{ form.username.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent border-end-0">
+                                    <i class="fas fa-user text-muted"></i>
+                                </span>
+                                {{ form.username(class="form-control border-start-0",
+                                               placeholder="Enter your username",
+                                               readonly=is_activation) }}
+                            </div>
+                            {% if form.username.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.username.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            {{ form.password.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent border-end-0">
+                                    <i class="fas fa-lock text-muted"></i>
+                                </span>
+                                {{ form.password(class="form-control border-start-0",
+                                               placeholder="Enter your password") }}
+                            </div>
+                            {% if form.password.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in form.password.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if is_activation %}
+                            <small class="form-text text-muted mt-1">
+                                Choose a secure password with at least 6 characters.
+                            </small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-grid mt-4">
+                            {{ form.submit(class="btn auth-btn " ~
+                                          ("activation" if is_activation else "signin"),
+                                          value=("Activate Account" if is_activation else "Sign In")) }}
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer auth-footer text-center">
+                    <p class="mb-0">
+                        {% if is_activation %}
+                        Already activated your account? <a href="{{ url_for('auth.authenticate') }}">Sign in here</a>
+                        {% else %}
+                        Don't have an account? Please contact an administrator.
+                        {% endif %}
+                    </p>
+                </div>
             </div>
         </div>
     </div>
