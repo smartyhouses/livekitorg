@@ -5,8 +5,8 @@
   --primary-dark: #4f46e5;
   --secondary-color: #a855f7;
   --accent-color: #d946ef;
-  --bg-gradient-start: #1e1b4b;
-  --bg-gradient-end: #312e81;
+  --bg-dark: #0a0a0f;
+  --bg-darker: #050508;
   --text-light: #f9fafb;
   --text-muted: #9ca3af;
   --glass-bg: rgba(15, 23, 42, 0.65);
@@ -30,7 +30,7 @@ body, html {
   padding: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   overflow-x: hidden;
-  background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+  background: var(--bg-darker);
   color: var(--text-light);
 }
 
@@ -42,47 +42,38 @@ body, html {
   justify-content: center;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+  background: var(--bg-darker);
+  background-image:
+    linear-gradient(to bottom right, rgba(99, 102, 241, 0.03), transparent),
+    linear-gradient(to top left, rgba(168, 85, 247, 0.03), transparent);
 }
 
-/* Wave Animation Background */
+/* Background gradient */
 .interact-page::before {
   content: '';
   position: absolute;
-  width: 200vw;
-  height: 200vh;
-  top: -50vh;
-  left: -50vw;
-  background-image:
-    radial-gradient(circle at 20% 35%, rgba(99, 102, 241, 0.15) 0%, transparent 70%),
-    radial-gradient(circle at 75% 65%, rgba(168, 85, 247, 0.15) 0%, transparent 70%);
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background:
+    radial-gradient(circle at 20% 35%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 75% 65%, rgba(168, 85, 247, 0.08) 0%, transparent 50%);
   z-index: 0;
-  animation: wave 15s infinite linear;
-  opacity: 0.5;
 }
 
-/* Second wave with different timing */
+/* Simple gradient background */
 .interact-page::after {
   content: '';
   position: absolute;
-  width: 200vw;
-  height: 200vh;
-  top: -50vh;
-  left: -50vw;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 800'%3E%3Cpath fill='%236366f1' fill-opacity='0.1' d='M769 229L1037 260.9M927 880L731 737 520 660 309 538 40 599 295 764 126.5 879.5 40 599-197 493 102 382-31 229 126.5 79.5-69-63'%3E%3C/path%3E%3Cpath fill='%23a855f7' fill-opacity='0.1' d='M-31 229L237 261 390 382 603 493 308.5 537.5 101.5 381.5M370 905L295 764'%3E%3C/path%3E%3Cpath fill='%23d946ef' fill-opacity='0.1' d='M520 660L578 842 731 737 840 599 603 493 520 660 295 764 309 538 390 382 539 269 769 229 577.5 41.5 370 105 295 -36 126.5 79.5 237 261 102 382 40 599 -69 737 127 880'%3E%3C/path%3E%3C/svg%3E");
-  background-size: 100% 100%;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: linear-gradient(135deg,
+    rgba(99, 102, 241, 0.1) 0%,
+    rgba(168, 85, 247, 0.1) 100%);
   z-index: 0;
-  animation: wave 20s infinite linear reverse;
-  opacity: 0.3;
-}
-
-@keyframes wave {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
 }
 
 /* Container */
@@ -297,7 +288,7 @@ body, html {
 }
 
 .latest-user-input {
-  color: var(--text-light);
+  
   font-size: 1rem;
   opacity: 0.8;
 }
